@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 
+from rest_framework.serializers import ModelSerializer
+
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
@@ -13,6 +15,12 @@ class Question(models.Model):
     def was_published_recently(self):
         now = timezone.now()
         return now - timedelta(days=1) <= self.pub_date <= now
+
+    # Added after ModelSerializer
+    def choices(self):
+        if not hasattr(self, "_choices"):
+            self._choices = self.choice_set.all()
+        return self._choices
 
 
 class Choice(models.Model):

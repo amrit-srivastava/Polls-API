@@ -14,6 +14,25 @@ from .serializers import (
 )
 
 
+@api_view(["GET", "PATCH", "DELETE"])
+def question_detail_view(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    if request.method == "GET":
+        serializer = QuestionDetailPageSerializer(question)
+        return Response(serializer.data)
+    elif request.method == "PATCH":
+        serializer = QuestionListPageSerializer(
+            question, data=request.data, partial=True
+        )
+        if serializer.is_valid():
+            question = serializer.save()
+            return Response(QuestionListPageSerializer(question).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == "DELETE":
+        question.delete()
+        return Response("Question deleted", status=status.HTTP_204_NO_CONTENT)
+
+
 @api_view(["GET", "POST"])
 def questions_view(request):
     if request.method == "GET":
@@ -31,23 +50,23 @@ def questions_view(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["GET", "PATCH", "DELETE"])
-def question_detail_view(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    if request.method == "GET":
-        serializer = QuestionDetailPageSerializer(question)
-        return Response(serializer.data)
-    elif request.method == "PATCH":
-        serializer = QuestionDetailPageSerializer(
-            question, data=request.data, partial=True
-        )
-        if serializer.is_valid():
-            question = serializer.save()
-            return Response(QuestionDetailPageSerializer(question).data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == "DELETE":
-        question.delete()
-        return Response("Question deleted", status=status.HTTP_204_NO_CONTENT)
+# @api_view(["GET", "PATCH", "DELETE"])
+# def question_detail_view(request, question_id):
+#     question = get_object_or_404(Question, pk=question_id)
+#     if request.method == "GET":
+#         serializer = QuestionDetailPageSerializer(question)
+#         return Response(serializer.data)
+#     elif request.method == "PATCH":
+#         serializer = QuestionDetailPageSerializer(
+#             question, data=request.data, partial=True
+#         )
+#         if serializer.is_valid():
+#             question = serializer.save()
+#             return Response(QuestionDetailPageSerializer(question).data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     elif request.method == "DELETE":
+#         question.delete()
+#         return Response("Question deleted", status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(["POST"])
