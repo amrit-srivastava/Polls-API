@@ -10,13 +10,10 @@ from .serializers import (
 
 
 class QuestionDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Question.objects.all()
 
     serializer_class = QuestionDetailPageSerializer
     lookup_url_kwarg = "question_id"
-
-    def get_queryset(self):
-        last_two_days = now() - timedelta(days=2)
-        return Question.objects.filter(pub_date__gt=last_two_days)
 
 
 class QuestionsView(ListCreateAPIView):
